@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 아이폰 홈 화면 추가 시 진짜 앱처럼 전체 화면으로 실행 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="V60 타이머">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233e2723'/><text x='50' y='67' font-size='56' text-anchor='middle'>☕</text></svg>">
+    <title>V60 NEO 브루잉 마스터</title>
+    <style>
+        :root {
+            --bg: #f8f5f0;
+            --card: #ffffff;
+            --primary: #3e2723;
+            --primary-light: #5d4037;
+            --accent: #d97706;
+            --accent-bg: #fef3c7;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #059669;
+            --success-bg: #d1fae5;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding-bottom: calc(40px + env(safe-area-inset-bottom));
+        }
+        header {
+            background: linear-gradient(135deg, #2c1810 0%, #4e342e 100%);
+            color: #ffffff;
+            padding: calc(18px + env(safe-area-inset-top)) 16px 18px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        header p {
+            font-size: 11px;
+            color: #fde68a;
+            margin-top: 2px;
+        }
+        .header-btns {
+            display: flex;
+            gap: 6px;
+        }
+        .icon-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            padding: 7px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .icon-btn:active {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #ede8e0;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 8px;
+        }
+        .step-badge {
+            background: var(--accent-bg);
+            color: #b45309;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .preset-pill {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .saved-bar {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed var(--border);
+        }
+        .saved-chip {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 5px 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .saved-chip span.del {
+            color: #ef4444;
+            font-weight: bold;
+            padding-left: 2px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #4b5563;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="date"], input[type="number"], select, textarea {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            height: 42px;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 14px;
+            background: #fafafa;
+            color: var(--text);
+            font-family: inherit;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        textarea {
+            height: auto;
+            min-height: 64px;
+        }
+        input[type="date"] {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+        }
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .flavor-tag {
+            font-size: 11px;
+            padding: 5px 9px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .flavor-tag.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .roast-auto-box {
+            margin-top: 6px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #fefce8;
+            border: 1px solid #fef08a;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .roast-auto-box select {
+            width: auto;
+            height: 32px;
+            padding: 4px 24px 4px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            background-color: #fff;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 10px;
+        }
+        .grid-2 > .form-group {
+            min-width: 0;
+        }
+        .cup-btns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .cup-btn {
+            padding: 9px 4px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+            cursor: pointer;
+            text-align: center;
+        }
+        .cup-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .degas-banner {
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .degas-peak { background: var(--success-bg); color: #065f46; border: 1px solid #a7f3d0; }
+        .degas-early { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .degas-old { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .stat-box {
+            background: #fdfbf7;
+            border: 1px solid #ede6d6;
+            border-radius: 12px;
+            padding: 10px 4px;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+        .stat-val {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-top: 2px;
+        }
+        .stat-sub {
+            font-size: 10px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .tip-box {
+            background: #f8fafc;
+            border-left: 3px solid var(--accent);
+            padding: 9px 12px;
+            font-size: 12px;
+            color: #334155;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .timer-panel {
+            background: #231712;
+            color: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .timer-display {
+            font-size: 46px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 1px;
+            color: #fbbf24;
+            margin: 4px 0;
+        }
+        .timer-status {
+            font-size: 13px;
+            color: #e5e7eb;
+            min-height: 20px;
+            margin-bottom: 12px;
+        }
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .btn-main {
+            flex: 2;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            background: #d97706;
+            color: #fff;
+        }
+        .btn-main.running {
+            background: #dc2626;
+        }
+        .btn-sub {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .pour-step {
+            border: 1.5px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 12px;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        .pour-step.active-step {
+            border-color: #d97706;
+            background: #fffbeb;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+            transform: scale(1.01);
+        }
+        .pour-step.done-step {
+            opacity: 0.55;
+            background: #f9fafb;
+        }
+        .pour-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .pour-title {
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--primary);
+        }
+        .pour-time {
+            font-size: 12px;
+            font-weight: 700;
+            color: #b45309;
+            background: #fef3c7;
+            padding: 2px 8px;
+            border-radius: 8px;
+        }
+        .pour-weight {
+            font-size: 15px;
+            font-weight: 800;
+            color: #059669;
+            margin-bottom: 4px;
+        }
+        .pour-desc {
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .rating-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .stars {
+            display: flex;
+            gap: 4px;
+        }
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #d1d5db;
+            padding: 0 2px;
+        }
+        .star-btn.on {
+            color: #f59e0b;
+        }
+        .save-log-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .log-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        .log-head {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(31, 41, 55, 0.95);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+            white-space: nowrap;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>☕ V60 NEO 브루잉 마스터</h1>
+        <p id="wakeStatus">루미 V70 맞춤 레시피 & 스마트 타이머</p>
+    </div>
+    <div class="header-btns">
+        <button class="icon-btn" id="soundToggleBtn" onclick="toggleSound()">🔔 알림음 ON</button>
+        <button class="icon-btn" onclick="saveCurrentPreset()">💾 원두 저장</button>
+    </div>
+</header>
+
+<div class="container">
+    <!-- STEP 1: 원두 및 조건 설정 -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <span class="step-badge">STEP 1</span>
+                <div class="card-title">원두 & 추출 조건</div>
+            </div>
+            <button class="preset-pill" onclick="applyBlueBottleWinter()">✨ 블루보틀 윈터 세팅</button>
+        </div>
+
+        <div id="savedPresetsContainer" class="saved-bar" style="display:none;"></div>
+
+        <div class="form-group">
+            <label>원두 이름 또는 테이스팅 노트 (입력 시 배전도 자동 추천)</label>
+            <input type="text" id="beanName" value="블루보틀 윈터 싱글 오리진 (블루베리 잼, 라벤더, 꿀)" placeholder="예: 에티오피아 예가체프, 고소한 블렌드..." oninput="handleBeanInput()">
+            <div class="tag-row">
+                <button type="button" class="flavor-tag active" data-roast="light" onclick="selectFlavorTag(this, 'light', '에티오피아 내추럴 (블루베리, 꽃향기)')">#상큼/꽃향기 (약배전)</button>
+                <button type="button" class="flavor-tag" data-roast="medium" onclick="selectFlavorTag(this, 'medium', '콜롬비아 수프리모 (카라멜, 견과류)')">#고소/밸런스 (중배전)</button>
+                <button type="button" class="flavor-tag" data-roast="dark" onclick="selectFlavorTag(this, 'dark', '다크 블렌드 (다크초콜릿, 스모키)')">#묵직/다크 (강배전)</button>
+            </div>
+            <div class="roast-auto-box">
+                <span id="roastDetectMsg">🤖 향미 분석: <strong>약배전 (화사한 산미/꽃향)</strong></span>
+                <select id="roastLevel" onchange="updateRecipe()">
+                    <option value="light" selected>약배전 (라이트)</option>
+                    <option value="medium">중배전 (미디엄)</option>
+                    <option value="dark">강배전 (다크)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>로스팅 날짜</label>
+                <input type="date" id="roastDate" onchange="updateRecipe()">
+            </div>
+            <div class="form-group">
+                <label>추출 스타일</label>
+                <select id="brewStyle" onchange="updateRecipe()">
+                    <option value="standard" selected>표준 밸런스 (1:15)</option>
+                    <option value="rich">진하고 달콤하게 (1:13.5)</option>
+                    <option value="clean">깔끔하고 화사하게 (1:16.5)</option>
+                    <option value="iced">아이스 급냉 드립</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="degasBanner" class="degas-banner degas-peak">
+            ✅ 로스팅 후 9일차 — 디개싱 완료! 향미가 가장 풍부한 피크 시기입니다.
+        </div>
+
+        <div class="form-group" style="margin-bottom: 4px;">
+            <label>추출 분량 선택 (또는 원두 무게 직접 입력)</label>
+            <div class="cup-btns">
+                <button type="button" class="cup-btn active" onclick="setCups(1, this)">1잔 (18g)</button>
+                <button type="button" class="cup-btn" onclick="setCups(2, this)">2잔 (30g)</button>
+                <button type="button" class="cup-btn" onclick="setCups(3, this)">3잔 (42g)</button>
+                <button type="button" class="cup-btn" onclick="setCups('custom', this)">직접 입력</button>
+            </div>
+            <div id="customWeightBox" style="display:none; margin-top:8px;">
+                <input type="number" id="customGrams" value="20" min="10" max="60" placeholder="원두 무게(g) 입력" oninput="updateRecipe()">
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: 자동 계산된 레시피 -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <span class="step-badge">STEP 2</span>
+                <div class="card-title">맞춤 추출 레시피</div>
+            </div>
+            <span style="font-size:11px; color:#6b7280; font-weight:700;">하리오 V60 NEO 기준</span>
+        </div>
+
+        <div class="summary-grid">
+            <div class="stat-box">
+                <div class="stat-label">원두량</div>
+                <div class="stat-val" id="resBeans">18g</div>
+                <div class="stat-sub" id="resRatio">1:15 비율</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">총 물 양</div>
+                <div class="stat-val" id="resWater">270g</div>
+                <div class="stat-sub" id="resIce">온수 추출</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">물 온도</div>
+                <div class="stat-val" id="resTemp">93°C</div>
+                <div class="stat-sub" id="resTempDesc">향미 극대화</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">루미 V70</div>
+                <div class="stat-val" id="resGrind">4.5</div>
+                <div class="stat-sub">중굵은 소금</div>
+            </div>
+        </div>
+
+        <div class="tip-box" id="recipeTip">
+            💡 <strong>추출 팁:</strong> V60 네오는 물 빠짐이 빠릅니다. 붓기 마지막에 드리퍼를 가볍게 흔들어(스월링) 추출 수율을 높여주세요.
+        </div>
+    </div>
+
+    <!-- STEP 3: 스마트 가이드 타이머 -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <span class="step-badge">STEP 3</span>
+                <div class="card-title">실시간 브루잉 타이머</div>
+            </div>
+            <span style="font-size:11px; color:#059669; font-weight:700;" id="targetTimeLabel">목표 02:20</span>
+        </div>
+
+        <div class="timer-panel">
+            <div style="font-size:11px; color:#fde68a; font-weight:700;">ELAPSED TIME</div>
+            <div class="timer-display" id="timerDisplay">00:00</div>
+            <div class="timer-status" id="timerStatus">준비 완료! 린싱 후 [추출 시작]을 누르세요.</div>
+            <div class="timer-controls">
+                <button type="button" class="btn-main" id="startBtn" onclick="toggleTimer()">▶ 추출 시작</button>
+                <button type="button" class="btn-sub" onclick="resetTimer()">↺ 초기화</button>
+            </div>
+        </div>
+
+        <div class="step-list" id="stepListContainer"></div>
+    </div>
+
+    <!-- STEP 4: 나만의 테이스팅 노트 & 일지 -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <span class="step-badge">STEP 4</span>
+                <div class="card-title">브루잉 테이스팅 노트</div>
+            </div>
+        </div>
+
+        <div class="rating-row">
+            <span>산미 (Acidity)</span>
+            <div class="stars" data-metric="acidity">
+                <button type="button" class="star-btn on" onclick="setRating('acidity', 1)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('acidity', 2)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('acidity', 3)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('acidity', 4)">★</button>
+                <button type="button" class="star-btn" onclick="setRating('acidity', 5)">★</button>
+            </div>
+        </div>
+        <div class="rating-row">
+            <span>단맛 (Sweetness)</span>
+            <div class="stars" data-metric="sweetness">
+                <button type="button" class="star-btn on" onclick="setRating('sweetness', 1)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('sweetness', 2)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('sweetness', 3)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('sweetness', 4)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('sweetness', 5)">★</button>
+            </div>
+        </div>
+        <div class="rating-row" style="border-bottom:none;">
+            <span>바디감 (Body)</span>
+            <div class="stars" data-metric="body">
+                <button type="button" class="star-btn on" onclick="setRating('body', 1)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('body', 2)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('body', 3)">★</button>
+                <button type="button" class="star-btn on" onclick="setRating('body', 4)">★</button>
+                <button type="button" class="star-btn" onclick="setRating('body', 5)">★</button>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:8px; margin-bottom:0;">
+            <textarea id="tastingMemo" rows="2" placeholder="맛 평가나 다음번 조절 메모 (예: 4.5단계로 내리니 블루베리 향이 폭발함!)"></textarea>
+            <button type="button" class="save-log-btn" onclick="saveTastingLog()">📝 오늘의 브루잉 일지 저장</button>
+        </div>
+
+        <div id="logListContainer"></div>
+    </div>
+</div>
+
+<div id="toast" class="toast">알림 메시지</div>
+
+<script>
+    let currentCups = 1;
+    let timerInterval = null;
+    let elapsedSeconds = 0;
+    let isRunning = false;
+    let soundEnabled = true;
+    let lastActiveStepIdx = -1;
+    let currentSteps = [];
+    let wakeLock = null;
+    let ratings = { acidity: 4, sweetness: 5, body: 3 };
+
+    let savedPresets = [];
+    let savedLogs = [];
+
+    function getStorage(key, fallback) {
+        try {
+            const val = localStorage.getItem(key);
+            return val ? JSON.parse(val) : fallback;
+        } catch (e) {
+            return fallback;
+        }
+    }
+    function setStorage(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch (e) {}
+    }
+
+    window.onload = function() {
+        const d = new Date();
+        d.setDate(d.getDate() - 9);
+        document.getElementById('roastDate').value = d.toISOString().split('T')[0];
+
+        savedPresets = getStorage('v60_presets', []);
+        savedLogs = getStorage('v60_logs', []);
+        renderPresets();
+        renderLogs();
+        updateRecipe();
+    };
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function playBeep(freq = 880, duration = 0.18) {
+        if (!soundEnabled) return;
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + duration);
+        } catch (e) {}
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔔 알림음 ON' : '🔕 알림음 OFF';
+        if (soundEnabled) playBeep(660, 0.12);
+    }
+
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                document.getElementById('wakeStatus').textContent = '☀️ 추출 중 화면 꺼짐 방지 작동 중';
+            }
+        } catch (e) {}
+    }
+    function releaseWakeLock() {
+        if (wakeLock) {
+            wakeLock.release().catch(() => {});
+            wakeLock = null;
+            document.getElementById('wakeStatus').textContent = '루미 V70 맞춤 레시피 & 스마트 타이머';
+        }
+    }
+
+    function handleBeanInput() {
+        const text = document.getElementById('beanName').value.toLowerCase();
+        const roastSelect = document.getElementById('roastLevel');
+        const msgBox = document.getElementById('roastDetectMsg');
+
+        const lightKeywords = ['블루베리', '베리', '라벤더', '꽃', '자스민', '복숭아', '오렌지', '레몬', '감귤', '에티오피아', '케냐', '게이샤', '윈터', '싱글', '내추럴', '산미', '화사'];
+        const darkKeywords = ['다크', '초콜릿', '카카오', '스모키', '묵직', '탄맛', '에스프레소', '인도네시아', '만델링', '프렌치', '이탈리안', '과테말라'];
+
+        let detected = null;
+        if (lightKeywords.some(k => text.includes(k))) {
+            detected = 'light';
+            msgBox.innerHTML = '🤖 향미 분석: <strong>약배전 자동 추천</strong> (과일·꽃향기 극대화)';
+        } else if (darkKeywords.some(k => text.includes(k))) {
+            detected = 'dark';
+            msgBox.innerHTML = '🤖 향미 분석: <strong>강배전 자동 추천</strong> (쓴맛 억제·단맛 강조)';
+        } else if (text.trim().length > 1) {
+            detected = 'medium';
+            msgBox.innerHTML = '🤖 향미 분석: <strong>중배전 자동 추천</strong> (고소함·밸런스)';
+        }
+
+        if (detected && roastSelect.value !== detected) {
+            roastSelect.value = detected;
+        }
+        updateRecipe();
+    }
+
+    function selectFlavorTag(btn, roast, sampleName) {
+        document.querySelectorAll('.flavor-tag').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('beanName').value = sampleName;
+        document.getElementById('roastLevel').value = roast;
+        handleBeanInput();
+    }
+
+    function applyBlueBottleWinter() {
+        document.getElementById('beanName').value = '블루보틀 윈터 싱글 오리진 (블루베리 잼, 라벤더, 꿀)';
+        document.getElementById('roastLevel').value = 'light';
+        document.getElementById('brewStyle').value = 'standard';
+        const d = new Date();
+        d.setDate(d.getDate() - 9);
+        document.getElementById('roastDate').value = d.toISOString().split('T')[0];
+        setCups(1, document.querySelectorAll('.cup-btn')[0]);
+        handleBeanInput();
+        showToast('✨ 블루보틀 윈터 싱글 오리진 세팅 완료!');
+    }
+
+    function setCups(val, btn) {
+        currentCups = val;
+        document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        document.getElementById('customWeightBox').style.display = (val === 'custom') ? 'block' : 'none';
+        updateRecipe();
+    }
+
+    function updateRecipe() {
+        const roast = document.getElementById('roastLevel').value;
+        const style = document.getElementById('brewStyle').value;
+        const roastDateStr = document.getElementById('roastDate').value;
+
+        const banner = document.getElementById('degasBanner');
+        if (roastDateStr) {
+            const diffDays = Math.floor((new Date() - new Date(roastDateStr)) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) {
+                banner.className = 'degas-banner degas-early';
+                banner.textContent = '📅 미래 날짜가 선택되었습니다. 로스팅 날짜를 확인해 주세요.';
+            } else if (diffDays <= 4) {
+                banner.className = 'degas-banner degas-early';
+                banner.textContent = `⏳ 로스팅 후 ${diffDays}일차 — 가스가 많은 시기입니다. 뜸 들이기를 45초로 늘려 추출합니다.`;
+            } else if (diffDays <= 25) {
+                banner.className = 'degas-banner degas-peak';
+                banner.textContent = `✅ 로스팅 후 ${diffDays}일차 — 디개싱 완료! 향미가 가장 풍부한 피크 시기입니다.`;
+            } else {
+                banner.className = 'degas-banner degas-old';
+                banner.textContent = `🍂 로스팅 후 ${diffDays}일차 — 숙성이 많이 진행되었습니다. 물 온도를 1°C 높여 향미를 살립니다.`;
+            }
+        }
+
+        let beans = 18;
+        if (currentCups === 1) beans = 18;
+        else if (currentCups === 2) beans = 30;
+        else if (currentCups === 3) beans = 42;
+        else {
+            beans = parseFloat(document.getElementById('customGrams').value) || 20;
+        }
+
+        let ratio = 15;
+        let isIced = false;
+        if (style === 'rich') ratio = 13.5;
+        else if (style === 'clean') ratio = 16.5;
+        else if (style === 'iced') { ratio = 15; isIced = true; }
+
+        const totalLiquid = Math.round(beans * ratio);
+        const hotWater = isIced ? Math.round(totalLiquid * 0.6) : totalLiquid;
+        const iceWeight = isIced ? (totalLiquid - hotWater) : 0;
+
+        let temp = 93;
+        let grind = 4.5;
+        let tempDesc = '향미 극대화';
+
+        if (roast === 'light') {
+            temp = 93;
+            grind = 4.5;
+            tempDesc = '산미·꽃향기';
+        } else if (roast === 'medium') {
+            temp = 91;
+            grind = 4.8;
+            tempDesc = '단맛·밸런스';
+        } else {
+            temp = 88;
+            grind = 5.2;
+            tempDesc = '깔끔·묵직함';
+        }
+
+        if (beans >= 28 && beans < 38) grind = +(grind + 0.5).toFixed(1);
+        else if (beans >= 38) grind = +(grind + 0.8).toFixed(1);
+        if (isIced) grind = +(grind - 0.3).toFixed(1);
+
+        document.getElementById('resBeans').textContent = `${beans}g`;
+        document.getElementById('resRatio').textContent = `1:${ratio} 비율`;
+        document.getElementById('resWater').textContent = `${hotWater}g`;
+        document.getElementById('resIce').textContent = isIced ? `+얼음 ${iceWeight}g` : '온수 추출';
+        document.getElementById('resTemp').textContent = `${temp}°C`;
+        document.getElementById('resTempDesc').textContent = tempDesc;
+        document.getElementById('resGrind').textContent = `${grind}단계`;
+
+        const bloomWater = Math.round(beans * 2.2);
+        const remWater = hotWater - bloomWater;
+        const pour1Add = Math.round(remWater * 0.48);
+        const pour2Add = hotWater - bloomWater - pour1Add;
+
+        const bloomEnd = beans >= 28 ? 40 : 35;
+        const pour1End = bloomEnd + (beans >= 28 ? 45 : 40);
+        const pour2End = pour1End + (beans >= 28 ? 45 : 35);
+        const totalTarget = pour2End + (beans >= 28 ? 45 : 35);
+
+        document.getElementById('targetTimeLabel').textContent = `목표 ${formatTime(totalTarget)}`;
+
+        currentSteps = [
+            {
+                title: '1단계: 뜸 들이기 (Blooming)',
+                start: 0,
+                end: bloomEnd,
+                add: bloomWater,
+                total: bloomWater,
+                desc: `중앙에서 바깥으로 원을 그리며 ${bloomWater}g을 붓고, 드리퍼를 가볍게 1~2회 흔들어(스월링) 모든 가루를 적셔줍니다.`
+            },
+            {
+                title: '2단계: 1차 추출 (향미·산미)',
+                start: bloomEnd,
+                end: pour1End,
+                add: pour1Add,
+                total: bloomWater + pour1Add,
+                desc: `동전 크기 원을 그리며 일정한 물줄기로 ${pour1Add}g을 추가해 누적 ${bloomWater + pour1Add}g까지 붓습니다.`
+            },
+            {
+                title: '3단계: 2차 추출 (단맛·바디감)',
+                start: pour1End,
+                end: pour2End,
+                add: pour2Add,
+                total: hotWater,
+                desc: `수위가 절반쯤 내려갔을 때 나머지 ${pour2Add}g을 부어 총 ${hotWater}g을 채우고, 마지막에 가볍게 스월링합니다.`
+            },
+            {
+                title: '4단계: 드립 완료 및 서빙',
+                start: pour2End,
+                end: totalTarget + 30,
+                add: 0,
+                total: hotWater,
+                desc: `${formatTime(totalTarget)} 전후로 물이 다 빠지면 드리퍼를 치우고 서버를 흔들어 농도를 섞은 뒤 즐기세요!`
+            }
+        ];
+
+        renderSteps();
+    }
+
+    function renderSteps() {
+        const container = document.getElementById('stepListContainer');
+        container.innerHTML = currentSteps.map((s, idx) => `
+            <div class="pour-step" id="stepCard_${idx}">
+                <div class="pour-top">
+                    <span class="pour-title">${s.title}</span>
+                    <span class="pour-time">${formatTime(s.start)} ~ ${formatTime(s.end)}</span>
+                </div>
+                <div class="pour-weight">
+                    ${s.add > 0 ? `+${s.add}g 붓기 → 누적 ${s.total}g` : `최종 ${s.total}g 추출 완료`}
+                </div>
+                <div class="pour-desc">${s.desc}</div>
+            </div>
+        `).join('');
+    }
+
+    function formatTime(sec) {
+        const m = String(Math.floor(sec / 60)).padStart(2, '0');
+        const s = String(sec % 60)).padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function toggleTimer() {
+        const btn = document.getElementById('startBtn');
+        if (isRunning) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            btn.textContent = '▶ 계속 추출';
+            btn.classList.remove('running');
+            releaseWakeLock();
+        } else {
+            isRunning = true;
+            btn.textContent = '⏸ 일시정지';
+            btn.classList.add('running');
+            requestWakeLock();
+            if (elapsedSeconds === 0) playBeep(880, 0.15);
+            updateTimerUI();
+            timerInterval = setInterval(() => {
+                elapsedSeconds++;
+                updateTimerUI();
+            }, 1000);
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        elapsedSeconds = 0;
+        lastActiveStepIdx = -1;
+        releaseWakeLock();
+        document.getElementById('timerDisplay').textContent = '00:00';
+        document.getElementById('timerStatus').textContent = '준비 완료! 린싱 후 [추출 시작]을 누르세요.';
+        const btn = document.getElementById('startBtn');
+        btn.textContent = '▶ 추출 시작';
+        btn.classList.remove('running');
+        document.querySelectorAll('.pour-step').forEach(el => {
+            el.classList.remove('active-step', 'done-step');
+        });
+    }
+
+    function updateTimerUI() {
+        document.getElementById('timerDisplay').textContent = formatTime(elapsedSeconds);
+
+        let activeIdx = currentSteps.findIndex(s => elapsedSeconds >= s.start && elapsedSeconds < s.end);
+        if (activeIdx === -1 && elapsedSeconds >= currentSteps[currentSteps.length - 1].start) {
+            activeIdx = currentSteps.length - 1;
+        }
+
+        if (activeIdx !== -1 && activeIdx !== lastActiveStepIdx) {
+            if (lastActiveStepIdx !== -1) {
+                playBeep(1046, 0.25);
+            }
+            lastActiveStepIdx = activeIdx;
+            const step = currentSteps[activeIdx];
+            document.getElementById('timerStatus').textContent = `👉 ${step.title} (목표 ${step.total}g)`;
+
+            currentSteps.forEach((_, idx) => {
+                const card = document.getElementById(`stepCard_${idx}`);
+                if (!card) return;
+                card.classList.remove('active-step', 'done-step');
+                if (idx < activeIdx) card.classList.add('done-step');
+                else if (idx === activeIdx) card.classList.add('active-step');
+            });
+        }
+    }
+
+    function saveCurrentPreset() {
+        const name = document.getElementById('beanName').value.trim() || '이름 없는 원두';
+        const shortName = name.split('(')[0].trim().slice(0, 14);
+        const preset = {
+            id: Date.now(),
+            shortName,
+            beanName: name,
+            roastLevel: document.getElementById('roastLevel').value,
+            roastDate: document.getElementById('roastDate').value,
+            brewStyle: document.getElementById('brewStyle').value
+        };
+        savedPresets.unshift(preset);
+        if (savedPresets.length > 8) savedPresets.pop();
+        setStorage('v60_presets', savedPresets);
+        renderPresets();
+        showToast(`💾 '${shortName}' 원두 세팅이 영구 저장되었습니다!`);
+    }
+
+    function loadPreset(id) {
+        const p = savedPresets.find(item => item.id === id);
+        if (!p) return;
+        document.getElementById('beanName').value = p.beanName;
+        document.getElementById('roastLevel').value = p.roastLevel;
+        document.getElementById('roastDate').value = p.roastDate;
+        document.getElementById('brewStyle').value = p.brewStyle;
+        updateRecipe();
+        showToast(`☕ '${p.shortName}' 불러옴`);
+    }
+
+    function deletePreset(e, id) {
+        e.stopPropagation();
+        savedPresets = savedPresets.filter(item => item.id !== id);
+        setStorage('v60_presets', savedPresets);
+        renderPresets();
+    }
+
+    function renderPresets() {
+        const box = document.getElementById('savedPresetsContainer');
+        if (!savedPresets.length) {
+            box.style.display = 'none';
+            return;
+        }
+        box.style.display = 'flex';
+        box.innerHTML = savedPresets.map(p => `
+            <div class="saved-chip" onclick="loadPreset(${p.id})">
+                <span>☕ ${p.shortName}</span>
+                <span class="del" onclick="deletePreset(event, ${p.id})">×</span>
+            </div>
+        `).join('');
+    }
+
+    function setRating(metric, val) {
+        ratings[metric] = val;
+        const row = document.querySelector(`.stars[data-metric="${metric}"]`);
+        row.querySelectorAll('.star-btn').forEach((btn, idx) => {
+            btn.classList.toggle('on', idx < val);
+        });
+    }
+
+    function saveTastingLog() {
+        const bean = document.getElementById('beanName').value.split('(')[0].trim() || '핸드드립 커피';
+        const grind = document.getElementById('resGrind').textContent;
+        const beans = document.getElementById('resBeans').textContent;
+        const water = document.getElementById('resWater').textContent;
+        const memo = document.getElementById('tastingMemo').value.trim();
+
+        const log = {
+            id: Date.now(),
+            date: new Date().toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+            bean,
+            spec: `${beans}/${water} · 루미 ${grind}`,
+            ratings: { ...ratings },
+            memo
+        };
+        savedLogs.unshift(log);
+        setStorage('v60_logs', savedLogs);
+        document.getElementById('tastingMemo').value = '';
+        renderLogs();
+        showToast('📝 오늘의 브루잉 일지가 저장되었습니다!');
+    }
+
+    function deleteLog(id) {
+        savedLogs = savedLogs.filter(l => l.id !== id);
+        setStorage('v60_logs', savedLogs);
+        renderLogs();
+    }
+
+    function renderLogs() {
+        const container = document.getElementById('logListContainer');
+        if (!savedLogs.length) {
+            container.innerHTML = '';
+            return;
+        }
+        container.innerHTML = savedLogs.map(l => `
+            <div class="log-item">
+                <div class="log-head">
+                    <span>${l.bean} (${l.date})</span>
+                    <span style="color:#ef4444; cursor:pointer;" onclick="deleteLog(${l.id})">삭제</span>
+                </div>
+                <div style="color:#6b7280; margin-bottom:4px;">${l.spec} | 산미 ${l.ratings.acidity}★ · 단맛 ${l.ratings.sweetness}★ · 바디 ${l.ratings.body}★</div>
+                ${l.memo ? `<div style="color:#1f2937;">"${l.memo}"</div>` : ''}
+            </div>
+        `).join('');
+    }
+</script>
+</body>
+</html>
