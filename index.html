@@ -468,6 +468,30 @@
             color: var(--primary);
             margin-bottom: 4px;
         }
+        .troubleshoot-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .ts-item {
+            background: #fdfbf7;
+            border: 1px solid #ede6d6;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 12px;
+        }
+        .ts-title {
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .ts-desc {
+            color: #4b5563;
+            line-height: 1.45;
+        }
         .toast {
             position: fixed;
             bottom: 24px;
@@ -627,6 +651,26 @@
         </div>
 
         <div class="step-list" id="stepListContainer"></div>
+    </div>
+
+    <!-- 맛 조절 트러블슈팅 팁 -->
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <span class="step-badge">BREWING TIP</span>
+                <div class="card-title">맛 조절 가이드 (다음 잔 튜닝)</div>
+            </div>
+        </div>
+        <div class="troubleshoot-grid">
+            <div class="ts-item">
+                <div class="ts-title">😖 너무 쓰고 떫은맛이 난다면? (과다추출)</div>
+                <div class="ts-desc">• <strong>루미 V70 분쇄도:</strong> 눈금을 <strong>+0.5단계 더 굵게</strong> 조절해 물 빠짐을 빠르게 하세요.<br>• <strong>물 온도 & 추출:</strong> 물 온도를 1~2°C 낮추고, 마지막 스월링을 생략해 보세요.</div>
+            </div>
+            <div class="ts-item">
+                <div class="ts-title">🍋 너무 밍밍하고 신맛만 튄다면? (과소추출)</div>
+                <div class="ts-desc">• <strong>루미 V70 분쇄도:</strong> 눈금을 <strong>-0.5단계 더 가늘게</strong> 조절해 추출 시간을 늘리세요.<br>• <strong>물 온도 & 추출:</strong> 물 온도를 1~2°C 높이고, 물줄기를 더 가늘고 천천히 부어보세요.</div>
+            </div>
+        </div>
     </div>
 
     <!-- STEP 4: 나만의 테이스팅 노트 & 일지 -->
