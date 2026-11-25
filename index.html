@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- 아이폰 홈 화면 추가 시 진짜 앱처럼 전체 화면으로 실행 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="V60 타이머">
@@ -499,8 +498,8 @@
         <p id="wakeStatus">루미 V70 맞춤 레시피 & 스마트 타이머</p>
     </div>
     <div class="header-btns">
-        <button class="icon-btn" id="soundToggleBtn" onclick="toggleSound()">🔔 알림음 ON</button>
-        <button class="icon-btn" onclick="saveCurrentPreset()">💾 원두 저장</button>
+        <button type="button" class="icon-btn" id="soundToggleBtn" onclick="toggleSound()">🔔 알림음 ON</button>
+        <button type="button" class="icon-btn" onclick="saveCurrentPreset()">💾 원두 저장</button>
     </div>
 </header>
 
@@ -512,7 +511,7 @@
                 <span class="step-badge">STEP 1</span>
                 <div class="card-title">원두 & 추출 조건</div>
             </div>
-            <button class="preset-pill" onclick="applyBlueBottleWinter()">✨ 블루보틀 윈터 세팅</button>
+            <button type="button" class="preset-pill" onclick="applyBlueBottleWinter()">✨ 블루보틀 윈터 세팅</button>
         </div>
 
         <div id="savedPresetsContainer" class="saved-bar" style="display:none;"></div>
@@ -552,7 +551,7 @@
         </div>
 
         <div id="degasBanner" class="degas-banner degas-peak">
-            ✅ 로스팅 후 9일차 — 디개싱 완료! 향미가 가장 풍부한 피크 시기입니다.
+            ✅ 디개싱 상태를 계산 중입니다...
         </div>
 
         <div class="form-group" style="margin-bottom: 4px;">
@@ -709,17 +708,23 @@
         } catch (e) {}
     }
 
-    window.onload = function() {
+    function getLocalDateStr(offsetDays) {
         const d = new Date();
-        d.setDate(d.getDate() - 9);
-        document.getElementById('roastDate').value = d.toISOString().split('T')[0];
+        d.setDate(d.getDate() + offsetDays);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
+    window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('roastDate').value = getLocalDateStr(-9);
         savedPresets = getStorage('v60_presets', []);
         savedLogs = getStorage('v60_logs', []);
         renderPresets();
         renderLogs();
         updateRecipe();
-    };
+    });
 
     function showToast(msg) {
         const t = document.getElementById('toast');
@@ -807,9 +812,7 @@
         document.getElementById('beanName').value = '블루보틀 윈터 싱글 오리진 (블루베리 잼, 라벤더, 꿀)';
         document.getElementById('roastLevel').value = 'light';
         document.getElementById('brewStyle').value = 'standard';
-        const d = new Date();
-        d.setDate(d.getDate() - 9);
-        document.getElementById('roastDate').value = d.toISOString().split('T')[0];
+        document.getElementById('roastDate').value = getLocalDateStr(-9);
         setCups(1, document.querySelectorAll('.cup-btn')[0]);
         handleBeanInput();
         showToast('✨ 블루보틀 윈터 싱글 오리진 세팅 완료!');
@@ -830,7 +833,12 @@
 
         const banner = document.getElementById('degasBanner');
         if (roastDateStr) {
-            const diffDays = Math.floor((new Date() - new Date(roastDateStr)) / (1000 * 60 * 60 * 24));
+            const parts = roastDateStr.split('-');
+            const rDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diffDays = Math.round((today - rDate) / (1000 * 60 * 60 * 24));
+
             if (diffDays < 0) {
                 banner.className = 'degas-banner degas-early';
                 banner.textContent = '📅 미래 날짜가 선택되었습니다. 로스팅 날짜를 확인해 주세요.';
@@ -962,7 +970,7 @@
 
     function formatTime(sec) {
         const m = String(Math.floor(sec / 60)).padStart(2, '0');
-        const s = String(sec % 60)).padStart(2, '0');
+        const s = String(sec % 60).padStart(2, '0');
         return `${m}:${s}`;
     }
 
@@ -1045,7 +1053,7 @@
         if (savedPresets.length > 8) savedPresets.pop();
         setStorage('v60_presets', savedPresets);
         renderPresets();
-        showToast(`💾 '${shortName}' 원두 세팅이 영구 저장되었습니다!`);
+        showToast(`💾 '${shortName}' 원두 세팅이 저장되었습니다!`);
     }
 
     function loadPreset(id) {
